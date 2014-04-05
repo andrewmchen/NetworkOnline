@@ -10,14 +10,14 @@ The source to the NetworkOnline is provided in this repository.
 ## Usage/Installation
 NetworkOnline is a simple modified network.class file so to install you need to download the NetworkOnline.class
 and move it to the same directory as your Network.class. Then instead of running 
-'''bash
+```bash
 java Network machine random
-'''
+```
 
 you will run
 
-'''bash
+```bash
 java NetworkClient <gamenumber>
-'''
+```
 
 Where gamenumber is the game number you and your partner have agreed upon.
