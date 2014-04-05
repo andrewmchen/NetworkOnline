@@ -8,6 +8,9 @@ import java.net.*;
 import java.io.*;
 
 final class NetworkClient {
+
+    static final String VERSION = "v1.0";
+
     static int optionOffset = 0;
     static Socket opponentSocket = null;
     static ServerSocket serverSocket = null;
@@ -92,6 +95,12 @@ final class NetworkClient {
             opponentSocket.setSoTimeout(180000);
             out = new PrintWriter(opponentSocket.getOutputStream(), true);                   
             in = new BufferedReader(new InputStreamReader(opponentSocket.getInputStream()));
+            String versionString = NetworkClient.in.readLine();
+            if (!versionString.equals(VERSION)) {
+                System.out.println("You are running NetworkClient " + VERSION + ". Please download the most recent one, " + versionString + ". You can do this by running:\n");
+                System.out.println("curl -o NetworkClient.java http://www.ocf.berkeley.edu/~amchen/NetworkClient.java");
+            }
+
             System.out.println("You've connected to the server to play. Waiting for second player to join gameroom " + args[optionOffset] + "...");
             System.out.println("Joining game number " + args[optionOffset]);
             out.println(args[optionOffset]);

@@ -40,6 +40,9 @@ public class NetworkServer {
             Socket clientSocket = null;
             try {
                 clientSocket = ns.serverSocket.accept();
+                PrintWriter clientSocketOut = new PrintWriter(clientSocket.getOutputStream(), true);
+                clientSocketOut.println("v1.0");
+                clientSocketOut.flush();
                 clientSocket.setSoTimeout(300000);
                 System.out.println("Client has connected with IP " + clientSocket.getInetAddress());
                 log.log("Client has connected with IP " + clientSocket.getInetAddress());
