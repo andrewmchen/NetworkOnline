@@ -72,10 +72,10 @@ public class PlayerRunnable implements Runnable {
                 System.out.println(this.listen());
                 outStream.println("white");
                 outStream.flush();
-                //String filename = "log/game/" + System.currentTimeMillis() + "-game" + gameNumber;
-                //log = new Log(filename);
-                //log.log(otherColor + " is " + clientSocket.getInetAddress());
-                //say(filename);
+                // String filename = "log/game/" + System.currentTimeMillis() + "-game" + gameNumber;
+                // log = new Log(filename);
+                // log.log(otherColor + " is " + clientSocket.getInetAddress());
+                // say(filename);
                 // Get first players move and reply
                 // System.out.println("waiting for move");
                 String input = inStream.readLine();
@@ -85,16 +85,26 @@ public class PlayerRunnable implements Runnable {
                 outStream.println("black");
                 outStream.flush();
                 say("Second player in game " + gameNumber + " begins game");
-                //String filename = this.listen();
-                //log = new Log(filename);
-                //log.log(otherColor + " is " + clientSocket.getInetAddress());
+
+                try {
+                    Thread.sleep(100);
+                    messageQueue.element();
+                    System.out.println("Other socket in gameroom " + gameNumber + " is closed.");
+                    outStream.println("The opponent has quit.");
+                    outStream.flush();
+                    quit();
+                    return;
+                } catch (Exception e) {}
+                // String filename = this.listen();
+                // log = new Log(filename);
+                // log.log(otherColor + " is " + clientSocket.getInetAddress());
             }
-            clientSocket.setSoTimeout(30000);
+            clientSocket.setSoTimeout(15000);
             while (true) {
                 opponentsMove = this.listen();
                 outStream.println(opponentsMove);
                 outStream.flush();
-      //          log.log("" + color + " " + opponentsMove);
+                // log.log("" + color + " " + opponentsMove);
                 String input = inStream.readLine();
                 if (input.equals("QUIT")) {
                     quit();
@@ -106,18 +116,19 @@ public class PlayerRunnable implements Runnable {
         catch (SocketTimeoutException e) {
             System.out.println("Opponent timed out");
             // serverLog.log("Opponent timed out in room " + gameNumber);
-            outStream.println("The opponent has quit");
+            say("Opponent timed out (15s limit)");
+            outStream.println("You have timed out (15s limit).");
             outStream.flush();
-            quit();
-            return;
         }
         catch (IOException e) {
             System.out.println(e);
-            // serverLog.log(e.toString());
+            say(e.toString());
         }
         catch (Exception e) {
             System.out.println(e);
             // serverLog.log(e.toString());
+        }
+        finally {
             quit();
             return;
         }
@@ -125,7 +136,7 @@ public class PlayerRunnable implements Runnable {
 
     public void quit() {
         System.out.println("Person quit");
-        outStream.println("QUIT");
+        outStream.println("quit");
         outStream.flush();
         playersInGame.remove(gameNumber);
         gameToQueue.remove(gameNumber);

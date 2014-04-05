@@ -8,12 +8,7 @@ import java.net.*;
 import java.io.*;
 
 final class NetworkClient {
-    static final double ooox = 5.5D;
-    static double time = 0.0D;
-    static boolean quit = false;
-    static boolean waitKey = false;
     static int optionOffset = 0;
-    static boolean server = false;
     static Socket opponentSocket = null;
     static ServerSocket serverSocket = null;
     static PrintWriter out = null;
@@ -59,12 +54,12 @@ final class NetworkClient {
         }
         X3 localX3 = null;
         if (color == 1) {
-            localX3 = new X3((Player)localObject1, (Player)localObject2, true, time);
+            localX3 = new X3((Player)localObject1, (Player)localObject2, true, 0);
         } else {
-            localX3 = new X3((Player)localObject1, (Player)localObject2, true, time);
+            localX3 = new X3((Player)localObject1, (Player)localObject2, true, 0);
         }
 
-        X3.setWait(waitKey);
+        X3.setWait(false);
         while (localX3.xooox()) {
             localX3.oxxxo();
         }
@@ -72,10 +67,11 @@ final class NetworkClient {
     }
 
     public static void main(String[] args) throws IOException {
+        String host = "katmash.com";
         if (args.length < 1) {
             System.out.println("Usage To Play Game: java NetworkClient <gamenumber>");
             System.out.println();
-            opponentSocket = new Socket("katmash.com", 12344);
+            opponentSocket = new Socket(host, 12344);
             in = new BufferedReader(new InputStreamReader(opponentSocket.getInputStream()));
             StringBuilder output = new StringBuilder();
             int next = in.read();
@@ -84,10 +80,10 @@ final class NetworkClient {
                 next = in.read();
             }
             System.out.println(output.toString());
-            System.exit(1);
+            return;
         }
         try {
-            opponentSocket = new Socket("katmash.com", 12345);
+            opponentSocket = new Socket(host, 12345);
             out = new PrintWriter(opponentSocket.getOutputStream(), true);                   
             in = new BufferedReader(new InputStreamReader(opponentSocket.getInputStream()));
             System.out.println("You've connected to the server to play. Waiting for second player to join gameroom " + args[optionOffset] + "...");
@@ -102,6 +98,7 @@ final class NetworkClient {
             System.exit(1);
         } catch (Exception e) {
             System.out.println("More than 2 players for this game number");
+            System.exit(1);
         }
 
         try {
@@ -109,10 +106,6 @@ final class NetworkClient {
         }
         catch (Exception localException1) {
             localException1.printStackTrace();
-        }
-        
-        if (quit) {
-            System.exit(0);
         }
     }
 }
@@ -136,6 +129,9 @@ class NetworkPlayer extends Player {
                 int y1 = Character.getNumericValue(inputLine[4].charAt(1));
                 return new Move(x1, y1, x2, y2);
             }
+            System.out.println("The server responded with: " + input);
+            System.out.println("Exiting...");
+            System.exit(1);
         } catch (IOException e) {
             System.err.println("Something went wrong trying to receive a Move.");
             System.exit(1);
