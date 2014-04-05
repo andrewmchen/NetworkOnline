@@ -33,6 +33,6 @@ java NetworkClient <gamenumber>
 where gamenumber is the game number you and your partner have agreed upon.
 
 
-
+- - - 
 By Andrew Chen and Nathan Wong
 
