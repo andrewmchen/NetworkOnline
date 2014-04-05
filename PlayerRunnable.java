@@ -15,7 +15,7 @@ public class PlayerRunnable implements Runnable {
     public String color;
     public String otherColor;
     public Log log;
-    static int TIMEOUT = 15;
+    static int TIMEOUT = 30;
     // public Log serverLog = new Log("log/serverlog");
 
     public PlayerRunnable(Socket clientSocket, boolean start, int gameNumber, HashMap<Integer, Integer> playersInGame, HashMap<Integer, BlockingQueue> gameToQueue) {
@@ -43,9 +43,13 @@ public class PlayerRunnable implements Runnable {
     }
 
     public String listen() throws SocketTimeoutException {
+        return listen(TIMEOUT);
+    }
+
+    public String listen(int time) throws SocketTimeoutException {
         String message = "";
         try {
-            message = ((String) messageQueue.poll(TIMEOUT, TimeUnit.SECONDS));
+            message = ((String) messageQueue.poll(time, TimeUnit.SECONDS));
             if (message == null) {
                 throw new SocketTimeoutException();
             }
@@ -78,7 +82,7 @@ public class PlayerRunnable implements Runnable {
         String opponentsMove, myMove;
         try {
             if (!start) {
-                System.out.println(this.listen());
+                System.out.println(this.listen(180));
                 outStream.println("white");
                 outStream.flush();
                 // String filename = "log/game/" + System.currentTimeMillis() + "-game" + gameNumber;
@@ -126,12 +130,12 @@ public class PlayerRunnable implements Runnable {
             System.out.println("Opponent timed out");
             // serverLog.log("Opponent timed out in room " + gameNumber);
             try {
-                say("Opponent timed out (15s limit)");
+                say("Opponent timed out (30s limit)");
             } catch (IOException ex) {
                 outStream.println("Opponent *probably* quit.");
                 outStream.flush();
             }
-            outStream.println("You have timed out (15s limit).");
+            outStream.println("You have timed out (30s limit).");
             outStream.flush();
         }
         catch (IOException e) {

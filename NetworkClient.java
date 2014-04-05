@@ -31,6 +31,10 @@ final class NetworkClient {
                 throw new IOException("No color was received");
             }
         }
+        catch (SocketTimeoutException e) {
+            System.out.println("Timed out when looking for a game. Exiting...");
+            System.exit(0);
+        }
         catch (IOException e) {
             System.out.println(e);
         } 
@@ -84,6 +88,7 @@ final class NetworkClient {
         }
         try {
             opponentSocket = new Socket(host, 12345);
+            opponentSocket.setSoTimeout(180);
             out = new PrintWriter(opponentSocket.getOutputStream(), true);                   
             in = new BufferedReader(new InputStreamReader(opponentSocket.getInputStream()));
             System.out.println("You've connected to the server to play. Waiting for second player to join gameroom " + args[optionOffset] + "...");
