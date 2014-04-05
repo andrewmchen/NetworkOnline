@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.*;
+import java.text.*;
 
 public class Log {
 	String filename;
@@ -9,7 +11,9 @@ public class Log {
 
 	public void log(String text) {
 		try {
-			String time = DateFormatUtils.format(yourDate, "yyyy-MM-dd HH:mm:SS");
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			Date today = Calendar.getInstance().getTime();        
+			String time = df.format(today);
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename + ".txt", true)));
 			out.println("[" + time + "] " + text);
 			out.close();
