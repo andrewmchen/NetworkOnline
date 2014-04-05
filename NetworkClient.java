@@ -115,42 +115,42 @@ final class NetworkClient {
             System.exit(0);
         }
     }
+}
 
-    private static class NetworkPlayer extends Player {
+class NetworkPlayer extends Player {
 
-        public Move chooseMove() {
-            try {
-                String input;
-                input = NetworkClient.in.readLine();
-                String[] inputLine = input.split(" ");
-                if (inputLine[0].equals("[add")) {
-                    int x = Character.getNumericValue(inputLine[2].charAt(0));
-                    int y = Character.getNumericValue(inputLine[2].charAt(1));
-                    return new Move(x, y);
-                }
-                if (inputLine[0].equals("[step")) {
-                    int x2 = Character.getNumericValue(inputLine[2].charAt(0));
-                    int y2 = Character.getNumericValue(inputLine[2].charAt(1));
-                    int x1 = Character.getNumericValue(inputLine[4].charAt(0));
-                    int y1 = Character.getNumericValue(inputLine[4].charAt(1));
-                    return new Move(x1, y1, x2, y2);
-                }
-            } catch (IOException e) {
-                System.err.println("Something went wrong trying to receive a Move.");
-                System.exit(1);
+    public Move chooseMove() {
+        try {
+            String input;
+            input = NetworkClient.in.readLine();
+            String[] inputLine = input.split(" ");
+            if (inputLine[0].equals("[add")) {
+                int x = Character.getNumericValue(inputLine[2].charAt(0));
+                int y = Character.getNumericValue(inputLine[2].charAt(1));
+                return new Move(x, y);
             }
-            return new Move();
+            if (inputLine[0].equals("[step")) {
+                int x2 = Character.getNumericValue(inputLine[2].charAt(0));
+                int y2 = Character.getNumericValue(inputLine[2].charAt(1));
+                int x1 = Character.getNumericValue(inputLine[4].charAt(0));
+                int y1 = Character.getNumericValue(inputLine[4].charAt(1));
+                return new Move(x1, y1, x2, y2);
+            }
+        } catch (IOException e) {
+            System.err.println("Something went wrong trying to receive a Move.");
+            System.exit(1);
         }
+        return new Move();
+    }
 
-        public boolean opponentMove(Move m) {
-            NetworkClient.out.write(m.toString() + "\r\n");
-            NetworkClient.out.flush();
-            return true;
-        }
+    public boolean opponentMove(Move m) {
+        NetworkClient.out.write(m.toString() + "\r\n");
+        NetworkClient.out.flush();
+        return true;
+    }
 
-        public boolean forceMove(Move m) {
-            return false;
-        }
+    public boolean forceMove(Move m) {
+        return false;
     }
 }
 
