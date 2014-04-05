@@ -30,6 +30,11 @@ public class NetworkServer {
         NetworkServer ns = new NetworkServer();
         ns.openServerSocket();
         System.out.println("Server has started");
+        if (args.length == 1) {
+            int games = Integer.parseInt(args[0]);
+            System.out.println("" + games + " games have been played.");
+            ns.gamesPlayed = games;
+        }
         new Thread(new NetworkPing(ns.playersInGame)).start();
         while (true) {
             Socket clientSocket = null;
