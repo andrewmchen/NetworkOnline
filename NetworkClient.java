@@ -99,6 +99,7 @@ final class NetworkClient {
             if (!versionString.equals(VERSION)) {
                 System.out.println("You are running NetworkClient " + VERSION + ". Please download the most recent one, " + versionString + ". You can do this by running:\n");
                 System.out.println("curl -o NetworkClient.java http://www.ocf.berkeley.edu/~amchen/NetworkClient.java");
+                System.exit(0);
             }
 
             System.out.println("You've connected to the server to play. Waiting for second player to join gameroom " + args[optionOffset] + "...");
