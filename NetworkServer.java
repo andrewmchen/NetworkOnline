@@ -47,7 +47,7 @@ public class NetworkServer {
                         ns.gamesPlayed++;
                         ns.playersInGame.put(gameNumber, 2);
                         System.out.println("Two players in " + gameNumber + " beginning game");
-                        log.log("Game " + ns.gamesPlayed + ": Two players in room" + gameNumber + " beginning game");
+                        log.log("Game " + ns.gamesPlayed + ": Two players in room " + gameNumber + " beginning game");
                         Thread a = new Thread(new PlayerRunnable(clientSocket, true, gameNumber, ns.playersInGame, ns.gameToQueue));
                         a.start();
                     }
