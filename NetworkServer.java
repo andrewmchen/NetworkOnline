@@ -9,10 +9,12 @@ public class NetworkServer {
     public HashMap<Integer, BlockingQueue> gameToQueue;
     public int serverPort = 12345;
     public ServerSocket serverSocket;
+    public static Log log;
 
     public NetworkServer() {
         playersInGame = new HashMap<Integer, Integer>();
         gameToQueue = new HashMap<Integer, BlockingQueue>();
+        log = new Log("log/serverlog");
     }
     public void openServerSocket() {
         try {
@@ -33,14 +35,17 @@ public class NetworkServer {
             try {
                 clientSocket = ns.serverSocket.accept();
                 clientSocket.setSoTimeout(300000);
-                System.out.println("Client has connected");
+                System.out.println("Client has connected with IP " + clientSocket.getInetAddress());
+                log.log("Client has connected with IP " + clientSocket.getInetAddress());
                 int gameNumber = Integer.parseInt(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())).readLine());
                 System.out.println("Game number is "+ gameNumber);
+                log.log("Game number is "+ gameNumber);
                 if (ns.playersInGame.containsKey(gameNumber)) {
                     int players = ns.playersInGame.get(gameNumber);
                     if (players == 1) {
                         ns.playersInGame.put(gameNumber, 2);
                         System.out.println("Two players in " + gameNumber + " beginning game");
+                        log.log("Two players in " + gameNumber + " beginning game");
                         Thread a = new Thread(new PlayerRunnable(clientSocket, true, gameNumber, ns.playersInGame, ns.gameToQueue));
                         a.start();
                     }
@@ -49,7 +54,8 @@ public class NetworkServer {
                         PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
                         out.println("Closing connection more than two players");
                         out.flush();
-                        System.out.println("More than two players in game");
+                        System.out.println("More than two players in game " + gameNumber);
+                        log.log("More than two players in game " + gameNumber);
                     }
                 }
                 else {

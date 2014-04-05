@@ -13,6 +13,9 @@ public class PlayerRunnable implements Runnable {
     public BufferedReader inStream;
     public BlockingQueue messageQueue;
     public String color;
+    public String otherColor;
+    public Log log;
+    public Log serverLog = new Log("log/serverlog");
 
     public PlayerRunnable(Socket clientSocket, boolean start, int gameNumber, HashMap<Integer, Integer> playersInGame, HashMap<Integer, BlockingQueue> gameToQueue) {
         this.clientSocket = clientSocket;
@@ -22,14 +25,19 @@ public class PlayerRunnable implements Runnable {
         this.gameToQueue = gameToQueue;
         if (!start) {
             color = "BLACK";
+            otherColor = "WHITE";
         } else {
             color = "WHITE";
+            otherColor = "BLACK";
         }
         try {
             this.outStream = new PrintWriter(clientSocket.getOutputStream());                   
             this.inStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         }
-        catch(IOException e) {}
+        catch(IOException e) {
+            System.out.println(e);
+            serverLog.log(e.toString());
+        }
         messageQueue = gameToQueue.get(gameNumber);
     }
 
@@ -40,6 +48,7 @@ public class PlayerRunnable implements Runnable {
         }
         catch(InterruptedException e) {
             System.out.println(e);
+            serverLog.log(e.toString());
         }
         return message;
     }
@@ -50,6 +59,7 @@ public class PlayerRunnable implements Runnable {
         }
         catch (InterruptedException e) {
             System.out.println(e);
+            serverLog.log(e.toString());
         }
         while (!messageQueue.isEmpty()) {}
     }
@@ -62,6 +72,12 @@ public class PlayerRunnable implements Runnable {
                 System.out.println(this.listen());
                 outStream.println("white");
                 outStream.flush();
+                String filename = "log/game/" + System.currentTimeMillis() + "-game" + gameNumber;
+                log = new Log(filename);
+                log.log(otherColor + " is " + clientSocket.getInetAddress());
+                say(filename);
+                // Get first players move and reply
+                // System.out.println("waiting for move");
                 String input = inStream.readLine();
                 say(input);
             }
@@ -69,13 +85,16 @@ public class PlayerRunnable implements Runnable {
                 outStream.println("black");
                 outStream.flush();
                 say("Second player in game " + gameNumber + " begins game");
+                String filename = this.listen();
+                log = new Log(filename);
+                log.log(otherColor + " is " + clientSocket.getInetAddress());
             }
             clientSocket.setSoTimeout(30000);
             while (true) {
                 opponentsMove = this.listen();
                 outStream.println(opponentsMove);
                 outStream.flush();
-                System.out.println("" + color + " " + opponentsMove);
+                log.log("" + color + " " + opponentsMove);
                 String input = inStream.readLine();
                 if (input.equals("QUIT")) {
                     quit();
@@ -86,16 +105,19 @@ public class PlayerRunnable implements Runnable {
         }
         catch (SocketTimeoutException e) {
             System.out.println("Opponent timed out");
+            serverLog.log("Opponent timed out in room " + gameNumber);
             outStream.println("The opponent has quit");
             outStream.flush();
             quit();
             return;
         }
         catch (IOException e) {
-            System.out.println("IOexception");
+            System.out.println(e);
+            serverLog.log(e.toString());
         }
         catch (Exception e) {
             System.out.println(e);
+            serverLog.log(e.toString());
             quit();
             return;
         }

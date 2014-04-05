@@ -75,7 +75,7 @@ final class NetworkClient {
         if (args.length < 1) {
             System.out.println("Usage To Play Game: java NetworkClient <gamenumber>");
             System.out.println();
-            opponentSocket = new Socket("localhost", 12344);
+            opponentSocket = new Socket("katmash.com", 12344);
             in = new BufferedReader(new InputStreamReader(opponentSocket.getInputStream()));
             StringBuilder output = new StringBuilder();
             int next = in.read();
@@ -87,10 +87,10 @@ final class NetworkClient {
             System.exit(1);
         }
         try {
-            opponentSocket = new Socket("localhost", 12345);
+            opponentSocket = new Socket("katmash.com", 12345);
             out = new PrintWriter(opponentSocket.getOutputStream(), true);                   
             in = new BufferedReader(new InputStreamReader(opponentSocket.getInputStream()));
-            System.out.println("You've connected to " + opponentSocket.getInetAddress() + " to play. Waiting for second player...");
+            System.out.println("You've connected to the server to play. Waiting for second player to join gameroom " + args[optionOffset] + "...");
             System.out.println("Joining game number " + args[optionOffset]);
             out.println(args[optionOffset]);
             out.flush();
@@ -116,7 +116,7 @@ final class NetworkClient {
         }
     }
 
-    static class NetworkPlayer extends Player {
+    private static class NetworkPlayer extends Player {
 
         public Move chooseMove() {
             try {
