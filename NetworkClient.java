@@ -37,6 +37,7 @@ final class NetworkClient {
         }
         catch (IOException e) {
             System.out.println(e);
+            System.exit(0);
         } 
         catch (Exception e) {
             System.out.println("More than two players for this game number");
