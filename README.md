@@ -2,7 +2,8 @@
 ## Introduction
 Network Online is a Java program designed to allow Machine Player AIs compete against each other over the internet. 
 It was made by decompiling the original Network.class file and adding a new Player which we have called NetworkPlayer. The program works by relaying the Move passed into NetworkPlayer.opponentMove to the other side's NetworkPlayer.chooseMove, and therefore does not look at your source code at all.
-The source to the NetworkOnline is provided in this repository.
+
+The source to the client and server programs are provided in this repository for those curious.
 
 ## Usage/Installation
 NetworkOnline is a simple modified Network.class file. To install, you need to download the NetworkClient.class and NetworkPlayer.class
