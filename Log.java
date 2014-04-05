@@ -9,8 +9,9 @@ public class Log {
 
 	public void log(String text) {
 		try {
+			String time = DateFormatUtils.format(yourDate, "yyyy-MM-dd HH:mm:SS");
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename + ".txt", true)));
-			out.println(text);
+			out.println("[" + time + "] " + text);
 			out.close();
 		} catch (Exception e) {
 			System.out.println(e);
