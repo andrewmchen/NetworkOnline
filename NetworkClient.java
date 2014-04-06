@@ -100,7 +100,7 @@ final class NetworkClient {
             String versionString = NetworkClient.in.readLine();
             if (!versionString.equals(VERSION)) {
                 System.out.println("You are running NetworkClient " + VERSION + ". Please download the most recent one, " + versionString + ". You can do this by running:\n");
-                System.out.println("curl -o NetworkClient.java http://www.ocf.berkeley.edu/~amchen/NetworkClient.java");
+                System.out.println("curl -o NetworkClient.class http://www.ocf.berkeley.edu/~amchen/NetworkClient.class");
                 System.exit(0);
             }
             int gameRoom = Integer.parseInt(args[optionOffset]);
