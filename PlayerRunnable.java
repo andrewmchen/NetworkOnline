@@ -35,9 +35,8 @@ public class PlayerRunnable implements Runnable {
             this.outStream = new PrintWriter(clientSocket.getOutputStream());                   
             this.inStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         }
-        catch(IOException e) {
-            System.out.println(e);
-            // serverLog.log(e.toString());
+        catch (IOException e) {
+            System.out.println("IOException in PlayerRunnable with IP " + clientSocket.getInetAddress() + " in game " + gameNumber + ":" + e);
         }
         messageQueue = gameToQueue.get(gameNumber);
     }
@@ -54,10 +53,7 @@ public class PlayerRunnable implements Runnable {
                 throw new SocketTimeoutException();
             }
         }
-        catch(InterruptedException e) {
-            System.out.println(e);
-            // serverLog.log(e.toString());
-        }
+        catch(InterruptedException e) {}
         return message;
     }
 
@@ -65,10 +61,7 @@ public class PlayerRunnable implements Runnable {
         try {
             messageQueue.put(message);
         }
-        catch (InterruptedException e) {
-            System.out.println(e);
-            // serverLog.log(e.toString());
-        }
+        catch (InterruptedException e) {}
         long start = System.currentTimeMillis();
         while (!messageQueue.isEmpty()) {
             if (System.currentTimeMillis() - start > 1000*TIMEOUT) {
@@ -82,7 +75,7 @@ public class PlayerRunnable implements Runnable {
         String opponentsMove, myMove;
         try {
             if (!start) {
-                System.out.println(this.listen(180));
+                this.listen(180);
                 outStream.println("white");
                 outStream.flush();
                 // String filename = "log/game/" + System.currentTimeMillis() + "-game" + gameNumber;
@@ -103,7 +96,6 @@ public class PlayerRunnable implements Runnable {
                 try {
                     Thread.sleep(100);
                     messageQueue.element();
-                    System.out.println("Other socket in gameroom " + gameNumber + " is closed.");
                     outStream.println("The opponent has quit.");
                     outStream.flush();
                     quit();
@@ -127,7 +119,7 @@ public class PlayerRunnable implements Runnable {
             }
         }
         catch (SocketTimeoutException e) {
-            System.out.println("Opponent timed out");
+            System.out.println("Opponent timed out in gameroom " + gameNumber);
             // serverLog.log("Opponent timed out in room " + gameNumber);
             try {
                 say("Opponent timed out (30s limit)");
@@ -139,12 +131,11 @@ public class PlayerRunnable implements Runnable {
             outStream.flush();
         }
         catch (IOException e) {
-            System.out.println(e);
             outStream.println("Opponent *probably* quit.");
             outStream.flush();
         }
         catch (Exception e) {
-            System.out.println(e);
+            // System.out.println(e);
             // serverLog.log(e.toString());
         }
         finally {
@@ -154,17 +145,20 @@ public class PlayerRunnable implements Runnable {
     }
 
     public void quit() {
-        System.out.println("Person quit");
-        outStream.println("quit");
+        NetworkServer.log.logPrint("Client with IP " + clientSocket.getInetAddress() + " has quit game " + gameNumber);
+        outStream.println("Opponent *probably* quit.");
         outStream.flush();
+        while (messageQueue.poll() != null) {}
+        messageQueue.add("Opponent *probably* quit.");
+        try {
+            Thread.sleep(50);
+        } catch (Exception e) {}
         playersInGame.remove(gameNumber);
         gameToQueue.remove(gameNumber);
         try {
             clientSocket.close();
         }
-        catch(IOException e) {
-            System.out.println(e);
-        }
+        catch(IOException e) {}
         return;
     }
 }

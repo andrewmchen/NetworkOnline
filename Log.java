@@ -9,7 +9,7 @@ public class Log {
 		this.filename = filename;
 	}
 
-	public void log(String text) {
+	public String log(String text) {
 		try {
 			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			Date today = Calendar.getInstance().getTime();        
@@ -17,9 +17,15 @@ public class Log {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename + ".txt", true)));
 			out.println("[" + time + "] " + text);
 			out.close();
+			return "[" + time + "] " + text;
 		} catch (Exception e) {
 			System.out.println(e);
+			return "uh";
 		}
+	}
+
+	public void logPrint(String text) {
+		System.out.println(log(text));
 	}
 
 }
