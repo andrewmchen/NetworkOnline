@@ -6,7 +6,7 @@ import java.util.concurrent.*;
 
 public class NetworkServer {
 
-    static final String CLIENT_VERSION = "v1.0";
+    static final String CLIENT_VERSION = "v1.1";
 
     public HashMap<Integer, Integer> playersInGame;
     public HashMap<Integer, BlockingQueue> gameToQueue;
@@ -96,8 +96,9 @@ public class NetworkServer {
                     b.start();
                 }
             }
-            catch (IOException e) {
-                //handle error
+            catch (IOException e) {}
+            catch (NumberFormatException e) {
+                log.logPrint("Client with IP " + clientSocket.getInetAddress() + " is running an old client version.");
             }
         }
     }

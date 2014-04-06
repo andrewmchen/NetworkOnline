@@ -9,7 +9,7 @@ import java.io.*;
 
 final class NetworkClient {
 
-    static final String VERSION = "v1.0";
+    static final String VERSION = "v1.1";
 
     static int optionOffset = 0;
     static Socket opponentSocket = null;
@@ -77,7 +77,7 @@ final class NetworkClient {
     public static void main(String[] args) throws IOException {
         String host = "katmash.com";
         if (args.length < 1) {
-            System.out.println("Usage To Play Game: java NetworkClient <gamenumber>");
+            System.out.println("Usage: java NetworkClient <gamenumber>");
             System.out.println();
             opponentSocket = new Socket(host, 12344);
             in = new BufferedReader(new InputStreamReader(opponentSocket.getInputStream()));
@@ -90,38 +90,43 @@ final class NetworkClient {
             System.out.println(output.toString());
             return;
         }
+
         try {
             opponentSocket = new Socket(host, 12345);
             opponentSocket.setSoTimeout(180000);
             out = new PrintWriter(opponentSocket.getOutputStream(), true);                   
             in = new BufferedReader(new InputStreamReader(opponentSocket.getInputStream()));
+
             String versionString = NetworkClient.in.readLine();
             if (!versionString.equals(VERSION)) {
                 System.out.println("You are running NetworkClient " + VERSION + ". Please download the most recent one, " + versionString + ". You can do this by running:\n");
                 System.out.println("curl -o NetworkClient.java http://www.ocf.berkeley.edu/~amchen/NetworkClient.java");
                 System.exit(0);
             }
-
-            System.out.println("You've connected to the server to play. Waiting for second player to join gameroom " + args[optionOffset] + "...");
-            System.out.println("Joining game number " + args[optionOffset]);
+            int gameRoom = Integer.parseInt(args[optionOffset]);
+            if (gameRoom != 0) {
+                System.out.println("You've connected to the server to play. Waiting for second player to join gameroom " + gameRoom + "...");
+            } else {
+                System.out.println("You've connected to the server to play a public game. Waiting for second public player...");
+            }
             out.println(args[optionOffset]);
             out.flush();
         } catch (UnknownHostException e) {
-            System.err.println("Don't know about input host");
+            System.err.println("Don't know about input host.");
             System.exit(1);
         } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection");
+            System.err.println("Couldn't get I/O for the connection (server is likely not running).");
             System.exit(1);
         } catch (Exception e) {
-            System.out.println("More than 2 players for this game number");
+            System.out.println("This room is already full! It's likely that someone just timed out here. Try a different room number for a bit while the server lets the socket expire (3 min).");
             System.exit(1);
         }
 
         try {
             playGame();
         }
-        catch (Exception localException1) {
-            localException1.printStackTrace();
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
