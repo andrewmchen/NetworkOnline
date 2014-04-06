@@ -71,7 +71,10 @@ public class NetworkServer {
                     gameNumber = ns.assignGameNumber();
                     log.logPrint("Client has connected with IP " + clientSocket.getInetAddress() + " for public game, assigned to room "+ gameNumber);
                 } else {
-                    log.logPrint("Client has connected with IP " + clientSocket.getInetAddress() + ", game number is "+ gameNumber);
+                    if (gameNumber == ns.publicRoom) {
+                        ns.publicRoom = 0;
+                    }
+                    log.logPrint("Client has connected with IP " + clientSocket.getInetAddress() + ", game number is " + gameNumber);
                 }
 
                 if (ns.playersInGame.containsKey(gameNumber)) {
